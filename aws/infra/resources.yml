@@ -43,9 +43,10 @@ Resources:
           ForwardedValues:
             QueryString: false
 
-  BucketAccessPolicy:
+  ResourceAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
+      PolicyName: !Sub ${StackName}-resource-access-policy
       Roles:
         - !Ref ServiceRole
       PolicyDocument:
