@@ -1,0 +1,86 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+title: ThinkAddict.com
+email: info@thinkaddict.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://thinkaddict.com" # the base hostname & protocol for your site, e.g. http://example.com
+
+timezone: America/Los_Angeles
+
+plugins:
+  - jekyll-postcss
+  - jekyll-purgecss
+
+css_dir: assets
+
+socials:
+  twitter: https://twitter.com/thinkaddict
+  twitch: https://twitch.tv/thinkaddict
+  # youtube: https://youtube.com/thinkaddict
+  youtube: https://youtube.com/channel/UCxBVGE1VUKmtmoeu-KCqCEw
+  github: https://github.com/thinkaddict
+  instagram: https://instagram.com/thinkaddict
+
+# Build settings
+markdown: kramdown
+
+source: src
+destination: _site
+permalink: /:slug/
+
+algolia:
+  application_id: 'GYYR555Q2B'
+  index_name: 'ta-articles'
+  search_only_api_key: 'e0cb2e068a0a8d0741b3ab739221bfa3'
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      permalink: /articles/:slug/
+      layout: "article"
+  -
+    scope:
+      path: ""
+      type: "tags"
+    values:
+      permalink: /:slug/
+      layout: "tag"
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      layout: "default"
+
+collections:
+  tags:
+    output: true
+  posts:
+    output: true
+
+sass:
+  # style: compressed
+  load_paths:
+    - ./src/_sass
+    - ../vendor
+
+port: 3000

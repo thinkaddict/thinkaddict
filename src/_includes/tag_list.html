@@ -1,0 +1,15 @@
+{% assign tags = include.tags %}
+
+{% if tags.size > 0 %}
+  <div class="flex py-3">
+    {% for tag_name in tags %}
+      {% assign tag = site.tags | where: "slug", tag_name | first %}
+
+      {% if tag %}
+        <a href="{{ tag.url }}" class="block m-1 px-3 bg-orange-400 text-white rounded-sm hover:bg-orange-500 transition duration-500 ease-in-out">
+          {{ tag.title }}
+        </a>
+      {% endif %}
+    {% endfor %}
+      </div>
+{% endif %}

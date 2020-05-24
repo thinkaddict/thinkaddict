@@ -1,0 +1,10 @@
+{% assign header = include.header %}
+{% assign articles = include.articles %}
+
+{% if articles.size > 0 %}
+  <div>
+    {{ header }}
+
+    {% include article_grid.html articles=articles %}
+  </div>
+{% endif %}

@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+
+  jekyll:
+    environment: 
+      JEKYLL_ENV: production
+      LC_ALL: C.UTF-8
+      LANG: en_US.UTF-8
+      LANGUAGE: en_US.UTF-8
+    build:
+      context: "."
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - type: bind
+        source: "."
+        target: /src
+      - /src/node_modules
+      - /usr/local/bundle
+    ports:
+      - '3000:3000'
+      - '35729:35729'
+    working_dir: /src
+    command: |
+      bundle exec jekyll serve \
+        --drafts \
+        --future \
+        --livereload \
+        --port 3000 \
+        --trace \
+        --unpublished \
+        --host 0.0.0.0

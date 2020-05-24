@@ -1,0 +1,6 @@
+/node_modules
+/_site
+src/.sass-cache
+src/.jekyll-metadata
+src/.jekyll-cache
+.aws.json

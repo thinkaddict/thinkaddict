@@ -1,0 +1,35 @@
+{% assign article = include.article %}
+
+<div class="flex flex-1 items-center justify-center">
+
+  <div class="text-center text-gray-400">
+    <div class="text">
+      COMING SOON
+    </div>
+    <h1 class="text-5xl">
+      {{ page.headline | default: page.title }}
+    </h1>
+
+    {%- comment -%}
+      <hr>
+
+      {% if page.tags.size > 0 %}
+        {% include tag_list.html tags=page.tags %}
+        <hr>
+      {% endif %}
+
+      <div class="my-4">
+        {%- if page.coming_soon_description -%}
+          <p class="lead">
+            {{ page.coming_soon_description }}
+          </p>
+        {%- endif -%}
+
+        <p>
+          This post will be available {{ page.date | date: "%m/%d/%Y" }}.
+        </p>
+      </div>
+    {%- endcomment -%}
+  </div>
+
+</div>

@@ -1,0 +1,64 @@
+---
+layout: 
+---
+@import "_syntax-highlighting.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://rsms.me/inter/inter.css');
+html { 
+  @apply font-sans;
+}
+
+@supports (font-variation-settings: normal) {
+  html { 
+    @apply font-sans;
+  }
+}
+
+.article h2 {
+  @apply text-3xl mt-8 mb-2 tracking-tight;
+}
+
+.article p {
+  @apply mb-4;
+}
+
+.article a {
+  @apply text-blue-600 underline;
+}
+
+.article pre {
+  @apply text-base;
+}
+
+.article pre.highlight {
+  @apply rounded px-4 py-6 mb-4 overflow-x-auto;
+}
+
+.article code {
+  @apply text-base text-gray-500 px-px px-1 break-words;
+}
+
+.article pre code {
+  @apply p-0 text-gray-300 bg-transparent break-normal;
+  font-size: inherit;
+}
+
+.article ul {
+  @apply mb-4 list-disc pl-8;
+}
+
+.article-table-of-contents ul li a {
+  @apply mt-1 flex items-center px-3 py-2 text-sm leading-5 font-medium text-gray-600 rounded-md transition ease-in-out duration-150;
+}
+
+.article-table-of-contents ul li a:hover {
+  @apply text-gray-900 bg-gray-50;
+}
+
+.article-table-of-contents ul li a:focus {
+  @apply outline-none bg-gray-100;
+}

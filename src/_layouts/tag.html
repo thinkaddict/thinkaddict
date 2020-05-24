@@ -1,0 +1,25 @@
+---
+layout: container
+---
+{% assign _articles = site.posts | sort:"date" | reverse %}
+{% assign tag = page.slug %}
+
+{% assign articles = "" | split: "" %}
+
+{% for article in _articles %}
+  {% if article.tags contains tag %}
+    {% assign articles = articles | push: article %}
+  {% endif %}
+{% endfor %}
+
+<div class="container mx-auto">
+  <div class="mx-2">
+    <h1 class="text-3xl">
+      {{ page.title }}
+    </h1>
+
+    {{ content }}
+
+    {% include article_grid.html articles=articles %}
+  </div>
+</div>

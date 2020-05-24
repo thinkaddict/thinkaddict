@@ -1,0 +1,30 @@
+{% assign header = include.header %}
+{% assign references = include.references %}
+{% assign template = include.template | default: "article_grid.html" %}
+{% assign reference = include.to %}
+{% assign articles = site.posts %}
+
+{% assign referenced_articles = "" | split: "" %}
+
+{% if reference %}
+  {% assign article_basename = reference.path | replace: "_posts/", "" | replace: ".md", "" %}
+
+  {% for article in articles %}
+    {% if article.prerequisite_posts contains article_basename %}
+      {% assign referenced_articles = referenced_articles | push: article %}
+    {% endif %}
+  {% endfor %}
+
+{% else %}
+
+  {% for article in articles %}
+    {% assign article_basename = article.path | replace: "_posts/", "" | replace: ".md", "" %}
+
+    {% if references contains article_basename %}
+      {% assign referenced_articles = referenced_articles | push: article %}
+    {% endif %}
+  {% endfor %}
+
+{% endif %}
+
+{% include {{template}} header=header articles=referenced_articles %}

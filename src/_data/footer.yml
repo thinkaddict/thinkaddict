@@ -1,0 +1,60 @@
+- group_label: Solutions
+  visible: false
+  items: 
+    - item_label: Marketing
+      item_url: '#'
+      visible: true
+    - item_label: Analytics
+      item_url: '#'
+      visible: true
+    - item_label: Commerce
+      item_url: '#'
+      visible: true
+    - item_label: Insights
+      item_url: '#'
+      visible: true
+- group_label: Support
+  visible: false
+  items: 
+    - item_label: Pricing
+      item_url: '#'
+      visible: true
+    - item_label: Documentation
+      item_url: '#'
+      visible: true
+    - item_label: Guides
+      item_url: '#'
+      visible: true
+    - item_label: API Status
+      item_url: '#'
+      visible: true
+- group_label: Company
+  visible: false
+  items: 
+    - item_label: About
+      item_url: '#'
+      visible: true
+    - item_label: Blog
+      item_url: '#'
+      visible: true
+    - item_label: Jobs
+      item_url: '#'
+      visible: true
+    - item_label: Press
+      item_url: '#'
+      visible: true
+    - item_label: Partners
+      item_url: '#'
+      visible: true
+- group_label: Legal
+  visible: false
+  items: 
+    - item_label: Claim
+      item_url: '#'
+      visible: true
+    - item_label: Privacy
+      item_url: '#'
+      visible: true
+    - item_label: Terms
+      item_url: '#'
+      visible: true

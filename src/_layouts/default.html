@@ -1,0 +1,42 @@
+---
+---
+<!doctype html>
+<html lang="en" class="bg-white antialiased text-gray-900 leading-normal">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>
+      {% unless 'production' == jekyll.environment %}
+        [STAGING]&nbsp;
+      {% endunless %}
+
+      {%if page.title %}
+        {{ page.title | prepend: " - " | prepend: site.title }}
+      {% else %}
+        {{ site.title }}
+      {% endif %}
+    </title>
+
+    {%- comment -%}
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    {%- endcomment -%}
+    <link rel="stylesheet" href="/assets/main.css?v={{ 'assets/main.css' | fingerprint }}"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#da532c">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    {% include gtm/head.html %}
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include gtm/body.html %}
+
+    {{content}}
+
+    {% include algolia/lib.html %}
+  </body>
+</html>

@@ -1,0 +1,75 @@
+Parameters:
+  StackName:
+    Type: String
+  
+  ServiceRole:
+    Type: String
+
+Resources:
+
+  WebBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+
+  Cloudfront:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub '${StackName} CDN'
+        Enabled: true
+        HttpVersion: http2
+        DefaultRootObject: index.html
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /error.html
+        Origins:
+          - Id: website
+            CustomOriginConfig: 
+              OriginProtocolPolicy: http-only
+            DomainName: !Select
+              - 2
+              - !Split
+                - "/"
+                - !Sub ${WebBucket.WebsiteURL}
+        
+        DefaultCacheBehavior:
+          TargetOriginId: website
+          ViewerProtocolPolicy: redirect-to-https
+          ForwardedValues:
+            QueryString: false
+
+  BucketAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref ServiceRole
+      PolicyDocument:
+        Statement:
+          - Resource:
+              - !Sub ${WebBucket.Arn}/*
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+              - s3:GetObjectVersion
+              - s3:ListBucket
+              - s3:DeleteObject
+              - s3:PutObjectACL
+          - Resource:
+              - !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${Cloudfront}
+            Effect: Allow
+            Action:
+              - cloudfront:CreateInvalidation
+
+Outputs:
+
+  DistributionId:
+    Value: !Ref Cloudfront
+
+  Bucket:
+    Value: !Sub "s3://${WebBucket}"

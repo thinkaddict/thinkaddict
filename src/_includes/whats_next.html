@@ -1,0 +1,9 @@
+{% assign articles = include.articles %}
+
+{% if articles.size > 0 %}
+<section class="mt-5">
+  <h5 class="text-xl font-normal">Next Level</h5>
+
+  {% include article_grid.html articles=articles %}
+</section>
+{% endif %}

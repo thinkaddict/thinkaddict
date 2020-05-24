@@ -1,0 +1,222 @@
+Parameters:
+  GitHubRepo:
+    Type: String
+  GitHubBranch:
+    Type: String
+  GitHubUser:
+    Type: String
+  GitHubToken:
+    Type: String
+
+Resources:
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: DeployPolicy
+          PolicyDocument:
+            Statement:
+              - Resource:
+                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - iam:PassRole
+                  - cloudformation:DescribeStacks
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Statement:
+              - Resource:
+                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+              - Resource:
+                  - "*"
+                Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                  - logs:PutLogEvents
+                  - ecr:GetAuthorizationToken
+              - Resource:
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${EcrRepository}
+                Effect: Allow
+                Action:
+                  - ecr:*
+            
+  CloudformationServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: DeployStack
+          PolicyDocument:
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action: 
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                  - logs:PutLogEvents
+              - Resource: "*"
+                Effect: Allow
+                Action: 
+                  - s3:CreateBucket
+                  - s3:DeleteBucket
+                  - s3:PutBucketAcl
+                  - s3:PutBucketPolicy
+                  - s3:PutBucketWebsite
+                  - s3:DeleteBucketWebsite
+                  - s3:DeleteBucketPolicy
+              - Resource: "*"
+                Effect: Allow
+                Action: 
+                  - cloudfront:GetDistribution
+                  - cloudfront:CreateDistribution
+                  - cloudfront:DeleteDistribution
+                  - cloudfront:UpdateDistribution
+                  - cloudfront:TagResource
+                  - cloudfront:CreateInvalidation
+
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+
+  EcrRepository:
+    Type: AWS::ECR::Repository
+
+  JekyllBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-jekyll
+      ServiceRole: !Ref CodeBuildServiceRole
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        PrivilegedMode: true
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: REPOSITORY_URI
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepository}
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: aws/buildspec/jekyll.yml
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Location: !Ref ArtifactBucket
+        Type: S3
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: GitHub
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: 1
+              Configuration:
+                Owner: !Ref GitHubUser
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: Source
+        - Name: DeployCloudformation
+          Actions:
+            - Name: Resources
+              ActionTypeId: 
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: Resources
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                RoleArn: !GetAtt CloudformationServiceRole.Arn
+                StackName: !Sub ${AWS::StackName}-resource
+                TemplatePath: Source::aws/infra/resources.yml
+                Capabilities: CAPABILITY_IAM
+                OutputFileName: resources.json
+                ParameterOverrides: !Sub
+                  - |
+                    {
+                      "StackName": "${StackName}",
+                      "ServiceRole": "${ServiceRole}"
+                    }
+                  - StackName: !Ref AWS::StackName
+                    ServiceRole: !Sub ${CodeBuildServiceRole.Arn}
+
+        - Name: DeployJekyll
+          Actions:
+            - Name: JekyllBuild
+              ActionTypeId: 
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: Source
+                - Name: Resources
+              OutputArtifacts:
+                - Name: Build
+              Configuration:
+                ProjectName: !Ref JekyllBuild
+                PrimarySource: Source
+
+                
+
+        # On Deploy
+        # - [X] Update cloudformation
+        # - [ ] Build Jekyll
+        # - [ ] Deploy to s3
+        # - [ ] Purge cloudfront cache
+
+Outputs:
+
+  DashboardUrl:
+    Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
+    

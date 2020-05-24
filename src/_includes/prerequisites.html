@@ -1,0 +1,9 @@
+{% assign articles = include.articles %}
+
+{% if articles.size > 0 %}
+  <div class="mt-5">
+    <h5 class="text-xl mb-0">Foundations</h5>
+
+    {% include article_grid.html articles=articles %}
+  </div>
+{% endif %}

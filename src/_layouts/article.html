@@ -1,0 +1,67 @@
+---
+layout: container
+---
+
+<div class="flex-grow container mx-auto">
+  {% if page.published or jekyll.environment != 'production' %}
+
+    {% unless page.published %}
+      <div class="alert alert-warning" role="alert">
+        This article has not been published
+      </div>
+    {% endunless %}
+
+    <div class="md:flex">
+      <!-- Thanks @calebporzio! https://twitter.com/calebporzio/status/1151876736931549185?lang=en -->
+      <div class="hidden md:block md:w-1/5 mx-2 h-screen sticky top-0">
+
+        <div class="mt-5 article-table-of-contents">
+          {% include toc.html
+                html=content
+                h_min=2
+                h_max=2
+          %}
+
+          <div data-read-time class="text-muted small text-center my-4"></div>
+        </div>
+
+      </div>
+      <div class="md:w-4/5 mx-2" data-article-content>
+        
+        <div class="my-4">
+          <h1 class="text-5xl tracking-tighter">
+            {{ page.headline | default: page.title }}
+          </h1>
+
+          <h6 class="text-gray-400">
+            {{ page.date | date: "%m/%d/%Y" }}
+          </h6>
+        </div>
+
+        <hr>
+
+        {% if page.tags.size > 0 %}
+          {% include tag_list.html tags=page.tags %}
+          
+          <hr>
+        {% endif %}
+
+        {% include related_articles.html references=page.prerequisite_posts template="prerequisites.html" %}
+
+        <div class="article editable">
+          {{content}}
+        </div>
+
+        {% include related_articles.html to=page template="whats_next.html" %}
+
+      </div>
+    </div>
+
+
+  {% else %}
+
+    {% include article_coming_soon.html article=page %}
+
+  {% endif %}
+
+</div>

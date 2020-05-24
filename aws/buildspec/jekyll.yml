@@ -1,0 +1,53 @@
+version: 0.2
+
+env:
+  variables:
+    JEKYLL_ENV: production
+    LC_ALL: C.UTF-8
+    LANG: en_US.UTF-8
+    LANGUAGE: en_US.UTF-8
+    DOCKER_BUILDKIT: "1"
+    TZ: America/Los_Angeles
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+      ruby: 2.7
+    commands:
+      - $(aws ecr get-login --no-include-email)
+      - RESOURCES="$(cat ${CODEBUILD_SRC_DIR_Resources}/resources.json)"
+      - BUCKET_NAME="$(echo $RESOURCES | jq -r '.Bucket')"
+      - DISTRIBUTION_ID="$(echo $RESOURCES | jq -r '.DistributionId')"
+
+  pre_build:
+    commands:
+      - docker pull "${REPOSITORY_URI}:latest" || true
+
+  build:
+    commands:
+      - |
+        docker build \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --cache-from "${REPOSITORY_URI}:latest" \
+          --tag "${REPOSITORY_URI}:latest" \
+          --target build \
+          .
+      - |
+        docker build \
+          --cache-from "${REPOSITORY_URI}:latest" \
+          -o dist \
+          .
+  post_build:
+    commands:
+      - docker push "${REPOSITORY_URI}:latest"
+      - echo $BUCKET_NAME
+      - echo $DISTRIBUTION_ID
+      - aws s3 sync ./dist $BUCKET_NAME --delete
+      - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+
+artifacts:
+  type: zip
+  base-directory: dist
+  files:
+    - './**/*'
