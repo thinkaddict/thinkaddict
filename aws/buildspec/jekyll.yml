@@ -43,7 +43,7 @@ phases:
       - docker push "${REPOSITORY_URI}:latest"
       - echo $BUCKET_NAME
       - echo $DISTRIBUTION_ID
-      - aws s3 sync ./dist $BUCKET_NAME --delete
+      - aws s3 sync ./dist $BUCKET_NAME --delete --acl=public-read
       - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
 artifacts:
