@@ -1,6 +1,11 @@
+source .cloudformation
+
+echo "💾 Updating ${STACKNAME}..."
+echo ""
+
 aws cloudformation update-stack \
   --template-body file://aws/cloudformation.yml \
-  --stack-name thinkaddict-prod \
+  --stack-name ${STACKNAME} \
   --region us-east-1 \
   --capabilities CAPABILITY_IAM \
   --parameters \
