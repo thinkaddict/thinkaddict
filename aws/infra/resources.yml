@@ -46,7 +46,7 @@ Resources:
   ResourceAccessPolicy:
     Type: AWS::IAM::Policy
     Properties:
-      PolicyName: !Sub ${StackName}-resource-access-policy
+      PolicyName: ResourceAccessPolicy
       Roles:
         - !Ref ServiceRole
       PolicyDocument:
