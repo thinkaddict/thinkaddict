@@ -17,19 +17,18 @@ let plugins = [
 if (process.env.JEKYLL_ENV == 'production') {
   plugins = [
     ...plugins,
-    // cssnano({
-    //   preset: 'default'
-    // }),
-    // postcssPurgecss({
-    //   content: [
-    //     './_site/**/*.html'
-    //   ],
-    //   css: [
-    //     './_site/assets/main.css'
-    //   ],
-    //   defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
-    //   // defaultExtractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || []
-    // }),
+    cssnano({
+      preset: 'default'
+    }),
+    postcssPurgecss({
+      content: [
+        './_site/**/*.html'
+      ],
+      css: [
+        './_site/assets/main.css'
+      ],
+      defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
+    }),
   ]
 }
 

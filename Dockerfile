@@ -26,7 +26,7 @@ RUN npm install --frozen-lockfile
 FROM development as build
 ENV JEKYLL_ENV=production
 COPY . ./
-RUN jekyll build --config _config.yml,_config.prod.yml --destination /dist
+RUN jekyll build --config _config.yml,_config.prod.yml --destination _site
 
 FROM scratch as release
-COPY --from=build /dist /
+COPY --from=build _site /
