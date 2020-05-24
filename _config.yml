@@ -77,10 +77,4 @@ collections:
   posts:
     output: true
 
-sass:
-  # style: compressed
-  load_paths:
-    - ./src/_sass
-    - ../vendor
-
 port: 3000

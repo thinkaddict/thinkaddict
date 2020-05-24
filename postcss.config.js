@@ -19,16 +19,7 @@ if (process.env.JEKYLL_ENV == 'production') {
     ...plugins,
     cssnano({
       preset: 'default'
-    }),
-    postcssPurgecss({
-      content: [
-        './_site/**/*.html'
-      ],
-      css: [
-        './_site/assets/main.css'
-      ],
-      defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
-    }),
+    })
   ]
 }
 
