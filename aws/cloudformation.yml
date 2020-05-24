@@ -91,6 +91,12 @@ Resources:
               - Resource: "*"
                 Effect: Allow
                 Action: 
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+              - Resource: "*"
+                Effect: Allow
+                Action: 
                   - logs:CreateLogStream
                   - logs:CreateLogGroup
                   - logs:PutLogEvents
@@ -119,6 +125,25 @@ Resources:
 
   EcrRepository:
     Type: AWS::ECR::Repository
+    Properties:
+      LifecyclePolicy: 
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep only one untagged image, expire all others",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 1
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
 
   JekyllBuild:
     Type: AWS::CodeBuild::Project
@@ -188,7 +213,7 @@ Resources:
                       "ServiceRole": "${ServiceRole}"
                     }
                   - StackName: !Ref AWS::StackName
-                    ServiceRole: !Sub ${CodeBuildServiceRole.Arn}
+                    ServiceRole: !Sub ${CodeBuildServiceRole}
 
         - Name: DeployJekyll
           Actions:
@@ -206,14 +231,6 @@ Resources:
               Configuration:
                 ProjectName: !Ref JekyllBuild
                 PrimarySource: Source
-
-                
-
-        # On Deploy
-        # - [X] Update cloudformation
-        # - [ ] Build Jekyll
-        # - [ ] Deploy to s3
-        # - [ ] Purge cloudfront cache
 
 Outputs:
 
