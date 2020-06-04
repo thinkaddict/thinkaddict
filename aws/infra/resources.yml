@@ -13,7 +13,7 @@ Resources:
   ViewerRequestLambdaFunction:
       Type: AWS::Serverless::Function
       Properties:
-        CodeUri: ./lambda/src
+        CodeUri: ../../lambda/src
         Role: !GetAtt LambdaEdgeFunctionRole.Arn
         Runtime: nodejs12.x
         Handler: index.handler
