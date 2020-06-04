@@ -1,0 +1,31 @@
+version: 0.1
+
+env:
+  variables:
+    BUILD_OUTPUT_BUCKET:
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12  
+    commands:
+      - echo "nothing to do in install"
+  pre_build:
+    commands:
+      - echo "nothing to do in pre_build"
+  build:
+    commands:
+      - echo "Starting SAM packaging `date` in `pwd`"
+      - |
+        aws cloudformation package \
+          --template-file aws/infra/resources.yaml \
+          --s3-bucket $BUILD_OUTPUT_BUCKET \
+          --output-template-file resources.yaml
+  post_build:
+    commands:
+      - echo "build completed on `date`"
+
+artifacts:
+  files:
+    - resources.yaml
+  discard-paths: yes

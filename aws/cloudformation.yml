@@ -164,6 +164,40 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: aws/buildspec/jekyll.yml
 
+  JekyllDeploy:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-jekyll-deploy
+      ServiceRole: !Ref CodeBuildServiceRole
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        PrivilegedMode: true
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:4.0
+        Type: LINUX_CONTAINER
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: aws/buildspec/jekyll.yml
+
+  LambdaEdgeBuild:
+      Type: AWS::CodeBuild::Project
+      Properties:
+          Name: !Sub '${AWS::StackName}-lambda'
+          ServiceRole: !Ref CodeBuildServiceRole
+          Artifacts:
+            Type: CODEPIPELINE
+          Environment: 
+              Type: LINUX_CONTAINER
+              ComputeType: BUILD_GENERAL1_SMALL
+              Image: aws/codebuild/standard:4.0
+              EnvironmentVariables:
+                - Name: BUILD_OUTPUT_BUCKET
+                  Value: !Ref ArtifactBucket
+          Source: 
+              Type: CODEPIPELINE
+              BuildSpec: aws/buildspec/lambda.yml
+
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -187,8 +221,39 @@ Resources:
                 OAuthToken: !Ref GitHubToken
               OutputArtifacts:
                 - Name: Source
-        - Name: DeployCloudformation
+
+        - Name: Build
           Actions:
+            - Name: Site
+              ActionTypeId: 
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: SiteBuild
+              Configuration:
+                ProjectName: !Ref JekyllBuild
+
+            - Name: Lambda
+              ActionTypeId: 
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: LambdaBuild
+              Configuration:
+                ProjectName: !Ref LambdaEdgeBuild
+                PrimarySource: Source
+
+        - Name: Deploy
+          Actions:
+
             - Name: Resources
               ActionTypeId: 
                 Category: Deploy
@@ -196,14 +261,14 @@ Resources:
                 Provider: CloudFormation
                 Version: 1
               InputArtifacts:
-                - Name: Source
+                - Name: LambdaBuild
               OutputArtifacts:
                 - Name: Resources
               Configuration:
                 ActionMode: CREATE_UPDATE
                 RoleArn: !GetAtt CloudformationServiceRole.Arn
                 StackName: !Sub ${AWS::StackName}-resource
-                TemplatePath: Source::aws/infra/resources.yml
+                TemplatePath: LambdaBuild::resources.yml
                 Capabilities: CAPABILITY_IAM
                 OutputFileName: resources.json
                 ParameterOverrides: !Sub
@@ -215,22 +280,18 @@ Resources:
                   - StackName: !Ref AWS::StackName
                     ServiceRole: !Sub ${CodeBuildServiceRole}
 
-        - Name: DeployJekyll
+        - Name: Release
           Actions:
-            - Name: JekyllBuild
+            - Name: Site
               ActionTypeId: 
                 Category: Build
                 Owner: AWS
                 Provider: CodeBuild
                 Version: 1
               InputArtifacts:
-                - Name: Source
-                - Name: Resources
-              OutputArtifacts:
-                - Name: Build
+                - Name: SiteBuild
               Configuration:
-                ProjectName: !Ref JekyllBuild
-                PrimarySource: Source
+                ProjectName: !Ref JekyllDeploy
 
 Outputs:
 

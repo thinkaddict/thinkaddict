@@ -16,9 +16,9 @@ phases:
       ruby: 2.7
     commands:
       - $(aws ecr get-login --no-include-email)
-      - RESOURCES="$(cat ${CODEBUILD_SRC_DIR_Resources}/resources.json)"
-      - BUCKET_NAME="$(echo $RESOURCES | jq -r '.Bucket')"
-      - DISTRIBUTION_ID="$(echo $RESOURCES | jq -r '.DistributionId')"
+      # - RESOURCES="$(cat ${CODEBUILD_SRC_DIR_Resources}/resources.json)"
+      # - BUCKET_NAME="$(echo $RESOURCES | jq -r '.Bucket')"
+      # - DISTRIBUTION_ID="$(echo $RESOURCES | jq -r '.DistributionId')"
 
   pre_build:
     commands:
@@ -41,8 +41,8 @@ phases:
   post_build:
     commands:
       - docker push "${REPOSITORY_URI}:latest"
-      - aws s3 sync ./dist $BUCKET_NAME --delete --acl=public-read
-      - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+      # - aws s3 sync ./dist $BUCKET_NAME --delete --acl=public-read
+      # - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
 artifacts:
   type: zip
