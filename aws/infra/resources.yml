@@ -84,7 +84,6 @@ Resources:
             Effect: Allow
             Action:
               - cloudfront:CreateInvalidation
-              - cloudfront:UpdateDistribution
 
   LambdaEdgeFunctionRole:
     Type: AWS::IAM::Role

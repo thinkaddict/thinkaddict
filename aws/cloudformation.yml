@@ -105,6 +105,7 @@ Resources:
                   - iam:DetachRolePolicy
                   - iam:DeleteRole
                   - iam:PassRole
+                  - iam:CreateServiceLinkedRole
               - Resource: "*"
                 Effect: Allow
                 Action: 
