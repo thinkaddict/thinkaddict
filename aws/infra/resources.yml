@@ -1,3 +1,6 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
 Parameters:
   StackName:
     Type: String
@@ -6,6 +9,15 @@ Parameters:
     Type: String
 
 Resources:
+
+  ViewerRequestLambdaFunction:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: ./lambda/src
+        Role: !GetAtt LambdaEdgeFunctionRole.Arn
+        Runtime: nodejs12.x
+        Handler: index.handler
+        AutoPublishAlias: live 
 
   WebBucket:
     Type: AWS::S3::Bucket
@@ -19,7 +31,7 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
-        Comment: !Sub '${StackName} CDN'
+        Comment: !Sub "${StackName} CDN"
         Enabled: true
         HttpVersion: http2
         DefaultRootObject: index.html
@@ -42,6 +54,11 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
           ForwardedValues:
             QueryString: false
+            Headers:
+              - Origin
+          LambdaFunctionAssociations:
+            - EventType: viewer-request
+              LambdaFunctionARN: !Ref ViewerRequestLambdaFunction.Version
 
   ResourceAccessPolicy:
     Type: AWS::IAM::Policy
@@ -67,6 +84,25 @@ Resources:
             Effect: Allow
             Action:
               - cloudfront:CreateInvalidation
+
+  LambdaEdgeFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+        Path: "/"
+        ManagedPolicyArns:
+            - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Sid: "AllowLambdaServiceToAssumeRole"
+              Effect: "Allow"
+              Action: 
+                - "sts:AssumeRole"
+              Principal:
+                Service: 
+                  - "lambda.amazonaws.com"
+                  - "edgelambda.amazonaws.com"
 
 Outputs:
 

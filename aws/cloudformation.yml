@@ -164,6 +164,24 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: aws/buildspec/jekyll.yml
 
+  LambdaEdgeBuild:
+      Type: AWS::CodeBuild::Project
+      Properties:
+          Name: !Sub '${AWS::StackName}-lambda'
+          ServiceRole: !Ref CodeBuildServiceRole
+          Artifacts:
+            Type: CODEPIPELINE
+          Environment: 
+              Type: LINUX_CONTAINER
+              ComputeType: BUILD_GENERAL1_SMALL
+              Image: aws/codebuild/standard:4.0
+              EnvironmentVariables:
+                - Name: BUILD_OUTPUT_BUCKET
+                  Value: !Ref ArtifactBucket
+          Source: 
+              Type: CODEPIPELINE
+              BuildSpec: aws/buildspec/lambda.yml
+
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -215,9 +233,9 @@ Resources:
                   - StackName: !Ref AWS::StackName
                     ServiceRole: !Sub ${CodeBuildServiceRole}
 
-        - Name: DeployJekyll
+        - Name: Build
           Actions:
-            - Name: JekyllBuild
+            - Name: Jekyll
               ActionTypeId: 
                 Category: Build
                 Owner: AWS
@@ -231,6 +249,23 @@ Resources:
               Configuration:
                 ProjectName: !Ref JekyllBuild
                 PrimarySource: Source
+            - Name: Lambda
+              ActionTypeId: 
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: Source
+                - Name: Resources
+              OutputArtifacts:
+                - Name: Build
+              Configuration:
+                ProjectName: !Ref LambdaEdgeBuild
+                PrimarySource: Source
+
+
+      # TODO: Add Deploy Stage to copy HTML to S3 and Cloudformation updated lambda/buildspec.yml 
 
 Outputs:
 
