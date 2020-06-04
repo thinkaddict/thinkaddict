@@ -18,14 +18,14 @@ phases:
       - echo "Starting SAM packaging `date` in `pwd`"
       - |
         aws cloudformation package \
-          --template-file aws/infra/resources.yaml \
+          --template-file aws/infra/resources.yml \
           --s3-bucket $BUILD_OUTPUT_BUCKET \
-          --output-template-file resources.yaml
+          --output-template-file resources.yml
   post_build:
     commands:
       - echo "build completed on `date`"
 
 artifacts:
   files:
-    - resources.yaml
+    - resources.yml
   discard-paths: yes
