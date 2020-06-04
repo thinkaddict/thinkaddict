@@ -88,12 +88,23 @@ Resources:
         - PolicyName: DeployStack
           PolicyDocument:
             Statement:
+              - Resource:
+                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
               - Resource: "*"
                 Effect: Allow
                 Action: 
+                  - iam:CreateRole
+                  - iam:GetRole
                   - iam:PutRolePolicy
                   - iam:DeleteRolePolicy
                   - iam:GetRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:DeleteRole
+                  - iam:PassRole
               - Resource: "*"
                 Effect: Allow
                 Action: 
@@ -119,6 +130,21 @@ Resources:
                   - cloudfront:UpdateDistribution
                   - cloudfront:TagResource
                   - cloudfront:CreateInvalidation
+              - Resource: "*"
+                Effect: Allow
+                Action: 
+                  - cloudformation:CreateChangeSet
+              - Resource: "*"
+                Effect: Allow
+                Action: 
+                  - lambda:GetFunction
+                  - lambda:CreateFunction
+                  - lambda:UpdateFunctionCode
+                  - lambda:DeleteFunction
+                  - lambda:ListVersionsByFunction
+                  - lambda:PublishVersion
+                  - lambda:CreateAlias
+                  - lambda:DeleteAlias
 
   ArtifactBucket:
     Type: AWS::S3::Bucket
