@@ -1,7 +1,13 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - RESOURCES="$(cat ${CODEBUILD_SRC_DIR_Resources}/resources.json)"
+      - BUCKET_NAME="$(echo $RESOURCES | jq -r '.Bucket')"
+      - DISTRIBUTION_ID="$(echo $RESOURCES | jq -r '.DistributionId')"
+
   post_build:
     commands:
-      - aws s3 sync "${CODEBUILD_SRC_DIR}_${INPUT_SOURCE}" $BUCKET_NAME --delete --acl=public-read
+      - aws s3 sync ${CODEBUILD_SRC_DIR_SiteBuild} $BUCKET_NAME --delete --acl=public-read
       - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"

@@ -147,6 +147,10 @@ Resources:
                   - lambda:CreateAlias
                   - lambda:DeleteAlias
                   - lambda:EnableReplication
+                  - lambda:UpdateAlias
+                  - lambda:ListTags
+                  - lambda:TagResource
+                  - lambda:UntagResource
 
   ArtifactBucket:
     Type: AWS::S3::Bucket
@@ -204,11 +208,6 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:4.0
         Type: LINUX_CONTAINER
-        EnvironmentVariables:
-          - Name: BUILD_OUTPUT_BUCKET
-            Value: !Ref ArtifactBucket
-          - Name: INPUT_SOURCE
-            Value: SiteBuild
       Source:
         Type: CODEPIPELINE
         BuildSpec: aws/buildspec/deploy.yml
@@ -324,6 +323,7 @@ Resources:
               InputArtifacts:
                 - Name: Source
                 - Name: SiteBuild
+                - Name: Resources
               Configuration:
                 ProjectName: !Ref JekyllDeploy
                 PrimarySource: Source
