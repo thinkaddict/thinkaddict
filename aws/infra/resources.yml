@@ -36,7 +36,8 @@ Resources:
           - 0
           - Ref: Aliases
       ValidationMethod: DNS
-      SubjectAlternativeNames: Ref! Aliases
+      SubjectAlternativeNames:
+        Ref: Aliases
 
   ViewerRequestLambdaFunction:
       Type: AWS::Serverless::Function
