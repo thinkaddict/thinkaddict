@@ -7,6 +7,10 @@ Parameters:
     Type: String
   GitHubToken:
     Type: String
+  Aliases:
+    Description: (Optional) Comma separated list of domain names
+    Type: String
+    Default: ''
 
 Resources:
 
@@ -307,10 +311,12 @@ Resources:
                   - |
                     {
                       "StackName": "${StackName}",
-                      "ServiceRole": "${ServiceRole}"
+                      "ServiceRole": "${ServiceRole}",
+                      "Aliases": "${Aliases}"
                     }
                   - StackName: !Ref AWS::StackName
                     ServiceRole: !Sub ${CodeBuildServiceRole}
+                    Aliases: !Ref Aliases
 
         - Name: Release
           Actions:

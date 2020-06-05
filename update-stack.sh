@@ -15,4 +15,5 @@ aws cloudformation update-stack \
     ParameterKey=GitHubRepo,UsePreviousValue=true \
     ParameterKey=GitHubBranch,UsePreviousValue=true \
     ParameterKey=GitHubUser,UsePreviousValue=true \
-    ParameterKey=GitHubToken,UsePreviousValue=true
+    ParameterKey=GitHubToken,UsePreviousValue=true \
+    ParameterKey=Aliases,UsePreviousValue=true

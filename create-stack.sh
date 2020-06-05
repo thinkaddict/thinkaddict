@@ -16,5 +16,6 @@ aws cloudformation create-stack \
     ParameterKey=GitHubUser,ParameterValue=\"${2}\" \
     ParameterKey=GitHubRepo,ParameterValue=\"${3}\" \
     ParameterKey=GitHubBranch,ParameterValue=\"${4}\" \
-    ParameterKey=GitHubToken,ParameterValue=\"${5}\"  
+    ParameterKey=GitHubToken,ParameterValue=\"${5}\" \
+    ParameterKey=Aliases,ParameterValue=\"${6}\" \
 

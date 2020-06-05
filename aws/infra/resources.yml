@@ -8,7 +8,35 @@ Parameters:
   ServiceRole:
     Type: String
 
+  Aliases:
+    Description: >-
+        (Optional) Comma separated list of domain names
+
+    Type: CommaDelimitedList
+    Default: ''
+
+Conditions:
+
+  hasAliases:
+    Fn::Not:
+      - Fn::Equals:
+        - Fn::Join:
+           - ''
+           - Ref: Aliases
+        - ''
+
 Resources:
+
+  SSLCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Condition: hasAliases
+    Properties:
+      DomainName:
+        Fn::Select:
+          - 0
+          - Ref: Aliases
+      ValidationMethod: DNS
+      SubjectAlternativeNames: Ref! Aliases
 
   ViewerRequestLambdaFunction:
       Type: AWS::Serverless::Function
@@ -48,7 +76,6 @@ Resources:
               - !Split
                 - "/"
                 - !Sub ${WebBucket.WebsiteURL}
-        
         DefaultCacheBehavior:
           TargetOriginId: website
           ViewerProtocolPolicy: redirect-to-https
@@ -59,6 +86,18 @@ Resources:
           LambdaFunctionAssociations:
             - EventType: viewer-request
               LambdaFunctionARN: !Ref ViewerRequestLambdaFunction.Version
+        Aliases:
+          Fn::If:
+          - hasAliases
+          - !Ref Aliases
+          - !Ref AWS::NoValue
+        ViewerCertificate:
+          Fn::If:
+          - hasAliases
+          - AcmCertificateArn:
+              Ref: SSLCertificate
+            SslSupportMethod: sni-only
+          - !Ref AWS::NoValue
 
   ResourceAccessPolicy:
     Type: AWS::IAM::Policy
