@@ -146,6 +146,7 @@ Resources:
                   - lambda:PublishVersion
                   - lambda:CreateAlias
                   - lambda:DeleteAlias
+                  - lambda:EnableReplication
 
   ArtifactBucket:
     Type: AWS::S3::Bucket
@@ -316,9 +317,11 @@ Resources:
                 Provider: CodeBuild
                 Version: 1
               InputArtifacts:
+                - Name: Source
                 - Name: SiteBuild
               Configuration:
                 ProjectName: !Ref JekyllDeploy
+                PrimarySource: SiteBuild
 
 Outputs:
 

@@ -19,13 +19,13 @@ $ docker-compose up
 ### Creating the Stack
 
 ```shell
-$ ./create-stack.sh STACKNAME GITHUBUSER GITHUBREPO GITHUBBRANCH GITHUBTOKEN 
+$ ./create-stack.sh STACKNAME GITHUBUSER GITHUBREPO GITHUBBRANCH GITHUBTOKEN ENVIRONMENT:prod
 ```
 
-NOTE: This will create or update the `STACKNAME` in the `.cloudformation` file.
+NOTE: This will create or update the `STACKNAME` in the `.cloudformation.{ENVIRONMENT}` file.
 
 ### Updating the Stack
 
 ```shell
-$ ./update-stack.sh
+$ ./update-stack.sh ENVIRONMENT:prod
 ```

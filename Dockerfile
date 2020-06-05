@@ -20,9 +20,6 @@ WORKDIR /src
 COPY Gemfile* ./
 RUN bundle install
 
-COPY package.* ./
-RUN npm install --frozen-lockfile
-
 FROM development as build
 ENV JEKYLL_ENV=production
 COPY . ./

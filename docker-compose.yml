@@ -2,6 +2,21 @@ version: '3.7'
 
 services:
 
+  styles:
+    build:
+      context: ./styles
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./styles/src
+        target: /src
+      - type: bind
+        source: ./site
+        target: /src/site
+      - /src/node_modules
+    working_dir: /src
+    command: gulp
+
   jekyll:
     environment: 
       JEKYLL_ENV: production
@@ -9,15 +24,17 @@ services:
       LANG: en_US.UTF-8
       LANGUAGE: en_US.UTF-8
     build:
-      context: "."
+      context: .
       dockerfile: Dockerfile
       target: development
     volumes:
       - type: bind
-        source: "."
+        source: .
         target: /src
       - /src/node_modules
       - /usr/local/bundle
+    depends_on:
+      - styles      
     ports:
       - '3000:3000'
       - '35729:35729'

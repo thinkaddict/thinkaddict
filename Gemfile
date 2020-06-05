@@ -11,8 +11,8 @@ source 'https://rubygems.org'
 gem 'jekyll', '~> 4.0.1'
 
 # If you have any plugins, put them here!
-group :jekyll_plugins do
-  gem 'jekyll-postcss'
-  gem 'jekyll-purgecss'
-end
+# group :jekyll_plugins do
+#   gem 'jekyll-postcss'
+#   gem 'jekyll-purgecss'
+# end
 

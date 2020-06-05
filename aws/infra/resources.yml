@@ -17,7 +17,7 @@ Resources:
         Role: !GetAtt LambdaEdgeFunctionRole.Arn
         Runtime: nodejs12.x
         Handler: index.handler
-        AutoPublishAlias: live 
+        AutoPublishAlias: live
 
   WebBucket:
     Type: AWS::S3::Bucket
@@ -94,8 +94,7 @@ Resources:
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:
-            -
-              Sid: "AllowLambdaServiceToAssumeRole"
+            - Sid: "AllowLambdaServiceToAssumeRole"
               Effect: "Allow"
               Action: 
                 - "sts:AssumeRole"

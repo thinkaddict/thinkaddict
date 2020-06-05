@@ -24,11 +24,11 @@ url: "https://thinkaddict.com" # the base hostname & protocol for your site, e.g
 
 timezone: America/Los_Angeles
 
-plugins:
-  - jekyll-postcss
-  - jekyll-purgecss
+# plugins:
+#   - jekyll-postcss
+#   - jekyll-purgecss
 
-css_dir: assets
+# css_dir: assets
 
 socials:
   twitter: https://twitter.com/thinkaddict
@@ -41,7 +41,7 @@ socials:
 # Build settings
 markdown: kramdown
 
-source: src
+source: site
 destination: _site
 permalink: /:slug/
 

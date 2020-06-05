@@ -1,6 +1,9 @@
-source .cloudformation
+ENVIRONMENT=$(echo "${1:-master}" | sed 's/\(.\)\([A-Z]\)/\1-\2/g' | tr '[:upper:]' '[:lower:]')
+
+source ".cloudformation.${ENVIRONMENT}"
 
 echo "💾 Updating ${STACKNAME}..."
+echo "🚦 Environment: ${ENVIRONMENT}"
 echo ""
 
 aws cloudformation update-stack \

@@ -1,13 +1,7 @@
----
-layout: 
----
-@import "_syntax-highlighting.css";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import url('https://rsms.me/inter/inter.css');
 html { 
   @apply font-sans;
 }
