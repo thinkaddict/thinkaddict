@@ -204,9 +204,14 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:4.0
         Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: BUILD_OUTPUT_BUCKET
+            Value: !Ref ArtifactBucket
+          - Name: INPUT_SOURCE
+            Value: SiteBuild
       Source:
         Type: CODEPIPELINE
-        BuildSpec: aws/buildspec/jekyll.yml
+        BuildSpec: aws/buildspec/deploy.yml
 
   LambdaEdgeBuild:
       Type: AWS::CodeBuild::Project
@@ -321,7 +326,7 @@ Resources:
                 - Name: SiteBuild
               Configuration:
                 ProjectName: !Ref JekyllDeploy
-                PrimarySource: SiteBuild
+                PrimarySource: Source
 
 Outputs:
 

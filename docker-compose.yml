@@ -26,7 +26,6 @@ services:
       - type: bind
         source: .
         target: /src
-      - /src/node_modules
       - /usr/local/bundle
     depends_on:
       - styles      
